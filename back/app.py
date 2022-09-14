@@ -35,14 +35,21 @@ def creat_usuario():
     user=user_schema.load(body,session=db.session)
     user.save()
     return user_schema.dump(user)
-'''
+
 @app.route('/class/create', methods=['POST'])
 def create_class():
     body=request.get_json()
     class_schema=ClassSchema()
-    Classc = class_schema.load(body,session=db)
+    Classdb= class_schema.load(body,session=db.session)
+    Classdb.save()
+    return class_schema.dump(Classdb)
 
-'''
+@app.route('/class/users/<id>', methods=['POST'])
+def get_class_users(id):
+    classdb=Class.query.filter(Class.id==id).first()
+    user=User.query.filter(Class.users.contains(classdb)).all()
+    user_schema = UserSchema(many=True)
+    return user_schema.dumps(user)
 
 @app.route('/assignment/create',methods=['POST'])
 def create_assignment():
