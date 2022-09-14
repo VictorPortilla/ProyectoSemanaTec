@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import SQLAlchemySchema
-from back.models.user import User
+from models.user import User
 from models.shared import db
 from models.class_has_user import ClassHasUser
 

@@ -1,5 +1,4 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from back.models.class_has_user import ClassHasUser
 from models.shared import db
 from models.assignment import Assignment,AssignmentSchema
 from models.classdb import Class, Class,ClassSchema
@@ -25,5 +24,6 @@ class UserSchema(SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         assignments = Nested(AssignmentSchema, many=True, allow_null=True, default=None)
+        classes = Nested(ClassSchema, many=True, allow_null=True, default=None)
 
 
