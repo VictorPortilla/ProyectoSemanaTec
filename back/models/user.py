@@ -1,8 +1,11 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from back.models.class_has_user import ClassHasUser
 from models.shared import db
 from models.assignment import Assignment,AssignmentSchema
+from models.Class import Class, Class,ClassSchema
 from marshmallow_sqlalchemy.fields import Nested
 from models.user_has_assignment import UserHasAssignment
+from models.class_has_user import ClassHasUser
 from sqlalchemy.orm import relationship
 
 class User(db.Model):
@@ -11,6 +14,7 @@ class User(db.Model):
     email=db.Column(db.String(100),unique=True,nullable=False)
     password=db.Column(db.String(200),nullable=False)
     assignments = relationship('Assignment', secondary=UserHasAssignment,viewonly=True, backref='User')
+    classes = relationship('Class', secondary=ClassHasUser,viewonly=True, backref='User')
 
     def save(self):
         db.session.add(self)
@@ -21,3 +25,5 @@ class UserSchema(SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         assignments = Nested(AssignmentSchema, many=True, allow_null=True, default=None)
+
+
