@@ -1,6 +1,8 @@
+from crypt import methods
 from flask import Flask,jsonify,request
 from flask_sqlalchemy import SQLAlchemy
 from models.assignment import AssignmentSchema,Assignment
+from models.classdb import Class, ClassSchema
 from models.user import User,UserSchema
 from flask_cors import CORS
 
@@ -33,6 +35,14 @@ def creat_usuario():
     user=user_schema.load(body,session=db.session)
     user.save()
     return user_schema.dump(user)
+'''
+@app.route('/class/create', methods=['POST'])
+def create_class():
+    body=request.get_json()
+    class_schema=ClassSchema()
+    Classc = class_schema.load(body,session=db)
+
+'''
 
 @app.route('/assignment/create',methods=['POST'])
 def create_assignment():
