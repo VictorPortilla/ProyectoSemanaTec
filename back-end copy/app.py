@@ -1,14 +1,14 @@
-from crypt import methods
 from flask import Flask,jsonify,request
 from flask_sqlalchemy import SQLAlchemy
 from models.assignment import AssignmentSchema,Assignment
 from models.classdb import Class,ClassSchema
 from models.user import User,UserSchema
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:12345@localhost:5432/semana_tec'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:9198@localhost:5432/semana_tec'
 db = SQLAlchemy(app)
 
 @app.route('/')
@@ -54,10 +54,15 @@ def get_class_users(id):
 @app.route('/assignment/create',methods=['POST'])
 def create_assignment():
     body=request.get_json()
+    #body es un dict
+    userList = body.pop('users')
     assignment_schema=AssignmentSchema()
     assignment=assignment_schema.load(body,session=db.session)
     assignment.save()
-    return assignment_schema.dump(assignment)    
+    print("id = ", end="")
+    print(assignment.id)
+    #iteramos sobre userList, guardando cada relación 
+    return assignment_schema.dump(assignment)
 
 @app.route('/assignment/assign',methods=['POST'])
 def assign():
