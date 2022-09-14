@@ -2,7 +2,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from back.models.class_has_user import ClassHasUser
 from models.shared import db
 from models.assignment import Assignment,AssignmentSchema
-from models.Class import Class, Class,ClassSchema
+from models.classdb import Class, Class,ClassSchema
 from marshmallow_sqlalchemy.fields import Nested
 from models.user_has_assignment import UserHasAssignment
 from models.class_has_user import ClassHasUser
