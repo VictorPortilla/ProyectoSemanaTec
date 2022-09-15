@@ -8,7 +8,7 @@ import json
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:9198@localhost:5432/semana_tec'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8412@localhost:5432/semana_tec'
 db = SQLAlchemy(app)
 
 @app.route('/')
@@ -62,6 +62,12 @@ def create_assignment():
     print("id = ", end="")
     print(assignment.id)
     #iteramos sobre userList, guardando cada relación 
+    #userList[0].assigments.append(assignment.id)
+    curUser = User.query.filter_by(id=1).first()
+    curAssing = Assignment.query.filter_by(id=assignment.id).first()
+    curAssing.users.append(curUser)
+    curAssing.saverelation()
+    print(curAssing.users)
     return assignment_schema.dump(assignment)
 
 @app.route('/assignment/assign',methods=['POST'])

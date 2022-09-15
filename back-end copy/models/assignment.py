@@ -6,10 +6,12 @@ class Assignment(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     name=db.Column(db.String(100),nullable=False)
     due_date=db.Column(db.DateTime,nullable=False)
-    users = db.relationship('User', secondary = 'user_has_assignment')
 
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def saverelation(self):
         db.session.commit()
 
 class AssignmentSchema(SQLAlchemySchema):

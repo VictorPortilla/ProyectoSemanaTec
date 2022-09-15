@@ -12,8 +12,8 @@ class User(db.Model):
     name=db.Column(db.String(100),nullable=False)
     email=db.Column(db.String(100),unique=True,nullable=False)
     password=db.Column(db.String(200),nullable=False)
-    assignments = relationship('Assignment', secondary=UserHasAssignment,viewonly=True, backref='User')
-    classes = relationship('Class', secondary=ClassHasUser,viewonly=True, backref='User')
+    assignments = relationship('Assignment', secondary=UserHasAssignment,  backref='users')
+    classes = relationship('Class', secondary=ClassHasUser, backref='users')
 
     def save(self):
         db.session.add(self)
