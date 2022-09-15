@@ -59,15 +59,16 @@ def create_assignment():
     assignment_schema=AssignmentSchema()
     assignment=assignment_schema.load(body,session=db.session)
     assignment.save()
-    print("id = ", end="")
-    print(assignment.id)
+
     #iteramos sobre userList, guardando cada relación 
     #userList[0].assigments.append(assignment.id)
-    curUser = User.query.filter_by(id=1).first()
-    curAssing = Assignment.query.filter_by(id=assignment.id).first()
-    curAssing.users.append(curUser)
-    curAssing.saverelation()
-    print(curAssing.users)
+    currentAssignment =  Assignment.query.filter_by(id=assignment.id).first()
+    for userID in userList:
+        currentUser = User.query.filter_by(id=userID).first()
+        #if user: #no tendriamos que, pues solo damos opciones validas
+        currentAssignment.users.append(currentUser)
+
+    currentAssignment.saverelation()
     return assignment_schema.dump(assignment)
 
 @app.route('/assignment/assign',methods=['POST'])
