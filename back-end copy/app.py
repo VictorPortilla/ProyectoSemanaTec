@@ -8,7 +8,7 @@ import json
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:8412@localhost:5432/semana_tec'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:9198@localhost:5432/semana_tec'
 db = SQLAlchemy(app)
 
 @app.route('/')
@@ -36,18 +36,26 @@ def creat_usuario():
     user.save()
     return user_schema.dump(user)
 
-@app.route('/class/create', methods=['POST'])
+@app.route('/class/create', methods=['POST']) #Crea una clase y asigna la clase a un arreglo de usuarios
 def create_class():
     body=request.get_json()
+    userList = body.pop('users')
     class_schema=ClassSchema()
     Classdb= class_schema.load(body,session=db.session)
     Classdb.save()
+    #iteramos sobre userList, guardando cada relación 
+    #userList[0].assigments.append(assignment.id)
+    currentClass = Class.query.filter_by(id=Classdb.id).first()
+    for userID in userList:
+        currentUser = User.query.filter_by(id=userID).first()
+        currentClass.users.append(currentUser)
+    currentClass.save_relation()
     return class_schema.dump(Classdb)
 
 @app.route('/class/users/<id>') #Te da los usuarios de una clase
 def get_class_users(id):
     classdb=Class.query.filter(Class.id==id).first()
-    user=User.query.filter(Class.users.contains(classdb)).all()
+    user=User.query.filter(User.classes.contains(classdb)).all()
     user_schema = UserSchema(many=True)
     return user_schema.dumps(user)
     
@@ -68,7 +76,7 @@ def create_assignment():
         #if user: #no tendriamos que, pues solo damos opciones validas
         currentAssignment.users.append(currentUser)
 
-    currentAssignment.saverelation()
+    currentAssignment.save_relation()
     return assignment_schema.dump(assignment)
 
 @app.route('/assignment/assign',methods=['POST'])

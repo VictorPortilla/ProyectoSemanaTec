@@ -10,6 +10,9 @@ class Class(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    def save_relation(self):
+        db.session.commit()
     
 
 class ClassSchema(SQLAlchemySchema):

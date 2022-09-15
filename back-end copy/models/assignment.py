@@ -11,7 +11,7 @@ class Assignment(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def saverelation(self):
+    def save_relation(self):
         db.session.commit()
 
 class AssignmentSchema(SQLAlchemySchema):
