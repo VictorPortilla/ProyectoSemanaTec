@@ -75,6 +75,13 @@ def get_class_users(id):
     user_schema = UserSchema(many=True)
     return user_schema.dumps(user)
 
+@app.route('/user/classes/<id>') #Te da las clases de un usuario
+def get_user_classes(id):
+    user=User.query.filter(User.id==id).first()
+    classdb=Class.query.filter(Class.users.contains(user)).all()
+    class_schema = ClassSchema(many=True)
+    return class_schema.dumps(classdb)
+
 @app.route('/assignment/create',methods=['POST'])
 def create_assignment():
     body=request.get_json()

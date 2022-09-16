@@ -44,8 +44,8 @@
     >
       Tu usuario se creó con éxito
       <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="saved = false">
-          Cerrar
+        <v-btn text v-bind="attrs" @click="toLogin()">
+          Iniciar Sesión
         </v-btn>
       </template>
     </v-snackbar>
@@ -59,19 +59,26 @@ export default {
       saving: false,
       saved: false,
       newUser: {},
+      showPassword: false,
+      rules: {
+        required: (value) => !!value || "Campo obligatorio.",
+      },
     };
   },
   methods: {
     saveUser() {
       this.saving = true;
       this.$axios
-        .$post("http://localhost:5000/user/create", this.newUser)
+        .$post("/user/create", this.newUser)
         .then((response) => {
           console.log(response);
           this.saved = true;
           this.saving = false;
         });
     },
+    toLogin(){
+      this.$router.push('/login')
+    }
   },
 };
 </script>
