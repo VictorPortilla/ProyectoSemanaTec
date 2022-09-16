@@ -4,12 +4,27 @@ from models.assignment import AssignmentSchema,Assignment
 from models.classdb import Class,ClassSchema
 from models.user import User,UserSchema
 from flask_cors import CORS
-import json
+from flask_bcrypt import Bcrypt
+from flask_jwt import JWT, jwt_required, current_identity
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
+
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:9198@localhost:5432/semana_tec'
 db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = 'super-secret'
+
+def authenticate(username, password):
+    user = User.query.filter(User.email==username).first()
+    if user and bcrypt.check_password_hash(user.password, password):
+        return user
+
+def identity(payload):
+    user_id = payload['identity']
+    return User.query.filter(User.id==user_id).first()
+
+jwt = JWT(app, authenticate, identity)
 
 @app.route('/')
 def hello_world():
@@ -31,6 +46,7 @@ def get_user_assignments(id):
 @app.route('/user/create',methods=['POST']) #Crea usuario
 def creat_usuario():
     body=request.get_json()
+    body["password"]=bcrypt.generate_password_hash(body["password"])
     user_schema=UserSchema()
     user=user_schema.load(body,session=db.session)
     user.save()
@@ -58,7 +74,7 @@ def get_class_users(id):
     user=User.query.filter(User.classes.contains(classdb)).all()
     user_schema = UserSchema(many=True)
     return user_schema.dumps(user)
-    
+
 @app.route('/assignment/create',methods=['POST'])
 def create_assignment():
     body=request.get_json()
@@ -86,3 +102,9 @@ def assign():
     assignment=assignment_schema.load(body,session=db.session)
     assignment.save()
     return assignment_schema.dump(assignment) 
+
+@app.route('/protected')
+@jwt_required()
+def protected():
+    user_schema=UserSchema()
+    return '%s' % user_schema.dump(current_identity)
