@@ -6,12 +6,13 @@ from models.user import User,UserSchema
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt import JWT, jwt_required, current_identity
+import re
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:9198@localhost:5432/semana_tec'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://jwawlcebwmdinf:ab8c18bcf47a2374d5b4fb3a0f5a0e8af75ab0acaac38db3d2a467eaf78f444b@ec2-34-231-42-166.compute-1.amazonaws.com:5432/d2ko9tna94o8d'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = 'super-secret'
 
@@ -53,6 +54,7 @@ def creat_usuario():
     return user_schema.dump(user)
 
 @app.route('/class/create', methods=['POST']) #Crea una clase y asigna la clase a un arreglo de usuarios
+@jwt_required()
 def create_class():
     body=request.get_json()
     userList = body.pop('users')
@@ -83,6 +85,7 @@ def get_user_classes(id):
     return class_schema.dumps(classdb)
 
 @app.route('/assignment/create',methods=['POST'])
+@jwt_required()
 def create_assignment():
     body=request.get_json()
     #body es un dict
@@ -102,7 +105,17 @@ def create_assignment():
     currentAssignment.save_relation()
     return assignment_schema.dump(assignment)
 
+@app.route('/assignment/complete', methods=['POST'])
+@jwt_required()
+def complete_assignment():
+    body=request.get_json()
+    assignment = Assignment.query.filter_by(id=body['id']).first()
+    assignment.completed = True
+    assignment.save()
+    return AssignmentSchema().dump(assignment)
+
 @app.route('/assignment/assign',methods=['POST'])
+@jwt_required()
 def assign():
     body=request.get_json()
     assignment_schema=AssignmentSchema()

@@ -29,7 +29,7 @@
 export default {
   data(){
     return {
-      selectedPokemon:null,
+
     }
   },
   methods:{

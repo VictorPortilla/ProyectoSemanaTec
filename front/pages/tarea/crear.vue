@@ -38,7 +38,7 @@
           outlined
           name="input-7-4"
           label="Descripción de tu tarea"
-          value=""
+          v-model="assignment.description"
         ></v-textarea>
         <v-switch v-model="esEquipo" label="¿Es en equipo?"></v-switch>
         <v-select
@@ -65,6 +65,23 @@
         </v-btn>
       </v-col>
     </v-row>
+    <v-snackbar
+    :timeout="-1"
+    :value="true"
+    absolute
+    v-model="saved"
+    bottom
+    color="success"
+    outlined
+    right
+  >
+    Tu tarea se creó con éxito
+    <template v-slot:action="{ attrs }">
+      <v-btn text v-bind="attrs" @click="toDashboard()">
+        Ver mis tareas
+      </v-btn>
+    </template>
+  </v-snackbar>
   </div>
 </template>
 <script>
@@ -80,7 +97,8 @@ export default {
       date: null,
       time: null,
       assignment: {},
-      userID: 1
+      userID: 1, //for test user
+      saved: false
     };
   },
   mounted() {
@@ -92,9 +110,11 @@ export default {
   methods:{
     uploadAssignment(){
       this.assignment.due_date = this.date + 'T' + this.time
+      this.assignment.users.push(this.userID)
       console.log(this.assignment)
       this.$axios.$post('/assignment/create', this.assignment).then(response=>{
       console.log(response)
+      this.saved = true
     })
     },
     updateClassmates(){
@@ -102,6 +122,9 @@ export default {
       this.equipo = response.filter(data => data.id != this.userID) //borra al usuario del array
       console.log(this.equipo)
       })
+    },
+    toDashboard() {
+      this.$router.push('/dashboard')
     }
   }
 };

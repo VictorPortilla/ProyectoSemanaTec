@@ -18,8 +18,18 @@
             <NuxtLink :to="item.url">{{ item.title }}</NuxtLink>
             
           </v-list-item-title>
+         
         </v-list-item-content>
       </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>
+            <a  @click="logout">Log out</a>
+            
+          </v-list-item-title> 
+        </v-list-item-content>
+      </v-list-item>
+
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -29,10 +39,16 @@ export default {
     return{
       items:[
         {
-          title:"Crear Usuario",
-          url:"/usuario/crear"
+          title:"Iniciar sesion",
+          url:"/login"
         }
       ]
+    }
+  },
+  methods:{
+    logout(){
+      this.$cookies.removeAll();
+      this.$router.push('/login');
     }
   }
 };
